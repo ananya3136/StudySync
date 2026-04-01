@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db";
+import { User } from "./user.model";
 
 export const Message = sequelize.define("Message", {
   id: {
@@ -16,5 +17,11 @@ export const Message = sequelize.define("Message", {
   },
   groupId: {
     type: DataTypes.INTEGER
+  },
+  userName: {
+    type: DataTypes.STRING
   }
 });
+
+// Association: each Message belongs to a User
+Message.belongsTo(User, { foreignKey: 'userId' });

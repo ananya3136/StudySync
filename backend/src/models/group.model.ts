@@ -13,5 +13,10 @@ export const Group = sequelize.define("Group", {
   },
   description: {
     type: DataTypes.STRING
+  },
+  notes: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+    defaultValue: ""
   }
 });

@@ -19,8 +19,21 @@ export const User = sequelize.define("User", {
   password: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  username: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: true
+  },
+  role: {
+    type: DataTypes.ENUM('Admin', 'Moderator', 'Student'),
+    allowNull: false,
+    defaultValue: 'Student'
+  },
+  bio: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
-  
 });
 import { Group } from "./group.model";
 

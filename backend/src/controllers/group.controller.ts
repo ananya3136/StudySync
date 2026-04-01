@@ -6,6 +6,11 @@ import { sendEmail } from "../utils/mailer";
 // Create Group
 export const createGroup = async (req: Request, res: Response) => {
   try {
+    const userRole = (req as any).user.role;
+    if (userRole !== 'Admin') {
+      return res.status(403).json({ message: "Only Admins can create groups" });
+    }
+
     const { name, description } = req.body;
 
     const group = await Group.create({ name, description });

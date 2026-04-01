@@ -6,27 +6,35 @@ import jwt from "jsonwebtoken";
 // ✅ REGISTER
 export const register = async (req: Request, res: Response) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, username, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
+    const existingUsername = await User.findOne({ where: { username } });
+    if (existingUsername) {
+      return res.status(400).json({ message: "Username already taken" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
       name,
+      username,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: role || "Student",
+      bio: "Hello! I am using StudySync."
     });
 
     res.status(201).json(user);
 
   } catch (error) {
-  console.log("REGISTER ERROR:", error);  // 🔥 VERY IMPORTANT
-  res.status(500).json({ message: "Error registering user" });
-}
+    console.log("REGISTER ERROR:", error);  // 🔥 VERY IMPORTANT
+    res.status(500).json({ message: "Error registering user" });
+  }
 };
 
 // ✅ LOGIN (THIS IS WHAT YOU ARE MISSING)
@@ -42,11 +50,21 @@ export const login = async (req: Request, res: Response) => {
 
     if (!isValid) return res.status(401).json("Invalid password");
 
-    const token = jwt.sign({ id: user.id }, "SECRET", {
+    const token = jwt.sign({ id: user.id, role: user.role }, "SECRET", {
       expiresIn: "1d"
     });
 
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        bio: user.bio,
+        role: user.role
+      }
+    });
 
   } catch (error) {
     console.log("LOGIN ERROR:", error);
